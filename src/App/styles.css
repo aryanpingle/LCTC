@@ -1,0 +1,50 @@
+* {
+    box-sizing: border-box;
+}
+
+:root {
+    font-size: 2rem;
+}
+
+body {
+    margin: 0;
+    padding: 0.5em;
+    display: grid;
+    grid-auto-columns: 6fr 4fr;
+    grid-auto-flow: column;
+    gap: 0.5em;
+
+    height: 100vh;
+}
+
+main, aside {
+    border-radius: 0.5em;
+    outline: rgba(0, 0, 0, 0.25) solid 2px;
+    height: 100%;
+}
+
+main {
+    padding: 0.5em;
+    overflow: auto;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+aside {
+    padding: 0.5em;
+}
+
+input {
+    font-size: 1em;
+    font-family: 'Courier New', Courier, monospace;
+    font-weight: 700;
+
+    padding: 0.5rem;
+    width: 100%;
+    resize: none;
+    border: none;
+    outline: black solid 2px;
+    border-radius: 10px;
+}

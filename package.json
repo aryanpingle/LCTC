@@ -1,0 +1,23 @@
+{
+  "name": "testcase-generator",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "rollup -c -w",
+    "build": "rollup -c"
+  },
+  "author": "Aryan Pingle",
+  "license": "ISC",
+  "devDependencies": {
+    "@rollup/plugin-node-resolve": "^15.1.0",
+    "@rollup/plugin-typescript": "^11.1.2",
+    "preact": "^10.16.0",
+    "rollup": "^2.75.7",
+    "rollup-plugin-import-css": "^3.3.1",
+    "rollup-plugin-postcss": "^4.0.2",
+    "rollup-plugin-serve": "^2.0.2",
+    "tslib": "^2.6.0"
+  }
+}
