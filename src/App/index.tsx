@@ -1,6 +1,5 @@
 import { Component, Fragment, h, render } from 'preact';
 
-import BinaryTree, { validateBinaryTree } from './BinaryTree/binary-tree';
 import BinaryTreeSVG from './BinaryTree/BinaryTreeSVG';
 
 import './styles.css';
@@ -14,18 +13,13 @@ interface State {}
 class App extends Component<Props, State> {
   constructor(props: Props) {
     super(props);
-
-    GLOBAL_BT.randomise();
   }
 
   private inputChanged = (event: Event) => {
     let text = (event.target as HTMLInputElement).value;
     try {
       let arr = JSON.parse(text);
-      if (Array.isArray(arr)) {
-        // && validateBinaryTree(arr)) {
-        GLOBAL_BT.buildFromArray(arr);
-      }
+      if (Array.isArray(arr)) GLOBAL_BT.buildFromArray(arr);
     } catch (e: any) {
       return;
     }

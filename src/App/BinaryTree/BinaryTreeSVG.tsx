@@ -4,6 +4,7 @@ import { Box, getLetterWidth, linkRef, removeUnit } from '../utils';
 import style from './styles.css';
 
 import { GLOBAL_BT } from './globals';
+import { leftChild, parent, rightChild } from './binary-tree';
 
 interface Props {}
 
@@ -20,6 +21,7 @@ export default class BinaryTreeSVG extends Component<Props, State> {
   svgElement: SVGElement;
   svgContainer: HTMLElement;
   canvas: HTMLCanvasElement;
+  postRenderCallback: Function;
 
   constructor(props: Props) {
     super(props);
@@ -35,6 +37,16 @@ export default class BinaryTreeSVG extends Component<Props, State> {
       nodes: [],
       texts: [],
     });
+  }
+
+  componentDidUpdate(
+    previousProps: Readonly<Props>,
+    previousState: Readonly<State>,
+    snapshot: any
+  ): void {
+    if (!this.postRenderCallback) return;
+    this.postRenderCallback.call(null);
+    this.postRenderCallback = undefined;
   }
 
   componentDidMount(): void {
@@ -55,107 +67,155 @@ export default class BinaryTreeSVG extends Component<Props, State> {
     this.buildSVG();
   }
 
+  onNodeKeyDown(event: KeyboardEvent) {
+    let nodeIndex = parseInt(
+      (event.target as HTMLElement).getAttribute('data-node-index')
+    );
+
+    if (event.code === 'ArrowLeft' || event.code === 'ArrowRight') {
+      let childIndex =
+        event.code === 'ArrowLeft'
+          ? leftChild(nodeIndex)
+          : rightChild(nodeIndex);
+
+      if (childIndex in GLOBAL_BT.nodes) {
+        // @ts-ignore
+        event.target.parentElement.children[childIndex].focus();
+        return;
+      }
+
+      // no child exists, create one
+      // this will cause a rerender, so focus it after render
+      this.postRenderCallback = () => {
+        // @ts-ignore
+        event.target.parentElement.children[childIndex].focus();
+      };
+      GLOBAL_BT.appendNode(
+        nodeIndex,
+        event.code === 'ArrowLeft' ? 'left' : 'right',
+        '*'
+      );
+    }
+    if (event.code === 'ArrowUp') {
+      let parentIndex = parent(nodeIndex);
+      if (parentIndex < 0) return;
+      // @ts-ignore
+      event.target.parentElement.children[parentIndex].focus();
+    }
+    if (event.code === 'Backspace') {
+      // Focus the parent, then delete this node
+      let parentIndex = parent(nodeIndex);
+      if (parentIndex < 0) return;
+      // @ts-ignore
+      event.target.parentElement.children[parentIndex].focus();
+      GLOBAL_BT.deleteNode(nodeIndex);
+    }
+  }
+
   buildSVG(): void {
     const edges: VNode<SVGLineElement>[] = [];
     const nodes: VNode<SVGCircleElement>[] = [];
     const texts: VNode<SVGTextElement>[] = [];
 
-    const BT = GLOBAL_BT;
     const CANVAS_HEIGHT = this.state.HEIGHT;
     const CANVAS_WIDTH = this.state.WIDTH;
 
-    const ROWS = BT.height;
+    const ROWS = GLOBAL_BT.height;
     const BLOCK_HEIGHT = Math.round(CANVAS_HEIGHT / ROWS);
 
-    const FONT_HEIGHT = removeUnit(
-      window.getComputedStyle(this.svgElement).getPropertyValue('font-size')
-    ) / 2;
+    const FONT_HEIGHT =
+      removeUnit(
+        window.getComputedStyle(this.svgElement).getPropertyValue('font-size')
+      ) / 2;
 
-    // console.log(FONT_HEIGHT);
     const LETTER_WIDTH = getLetterWidth(this.canvas, FONT_HEIGHT);
-    // console.log(LETTER_WIDTH);
 
-    const boxes = BT.levels.map((row, rowIndex) => {
-      const COLS = 2 ** rowIndex;
-      const BLOCK_WIDTH = Math.floor(CANVAS_WIDTH / COLS);
+    const boxes = new Array((1 << GLOBAL_BT.height) - 1)
+      .fill(0)
+      .map((_, index) => {
+        const rowIndex = Math.floor(Math.log2(index + 1));
+        const COLS = 2 ** rowIndex;
+        const colIndex = rowIndex == 0 ? 0 : index + 1 - COLS;
 
-      return row.map(
-        (_, colIndex) =>
-          new Box(
-            colIndex * BLOCK_WIDTH,
-            rowIndex * BLOCK_HEIGHT,
-            BLOCK_WIDTH,
-            BLOCK_HEIGHT
-          )
+        const BLOCK_WIDTH = Math.floor(CANVAS_WIDTH / COLS);
+
+        return new Box(
+          colIndex * BLOCK_WIDTH,
+          rowIndex * BLOCK_HEIGHT,
+          BLOCK_WIDTH,
+          BLOCK_HEIGHT
+        );
+      });
+
+    for (let index = 0; index < boxes.length; ++index) {
+      const row = Math.floor(Math.log2(index + 1));
+      const node = GLOBAL_BT.nodes[index];
+
+      const box = boxes[index];
+
+      // create edges to children
+
+      const [cx, cy] = box.getCenter();
+      if (row != ROWS - 1) {
+        // left line
+        let [x2, y2] = boxes[leftChild(index)].getCenter();
+        edges.push(
+          <line
+            class={`${style.edge} ${
+              node && node.left ? style['edge--real'] : ''
+            }`}
+            x1={cx}
+            y1={cy}
+            x2={x2}
+            y2={y2}
+          ></line>
+        );
+
+        // right line
+        [x2, y2] = boxes[rightChild(index)].getCenter();
+        edges.push(
+          <line
+            class={`${style.edge} ${
+              node && node.right ? style['edge--real'] : ''
+            }`}
+            x1={cx}
+            y1={cy}
+            x2={x2}
+            y2={y2}
+          ></line>
+        );
+      }
+
+      // create the node
+
+      // let radius = 50;
+      let radius = Math.min(
+        20,
+        Math.floor(Math.min(box.width, box.height) / 3)
       );
-    });
-
-    for (let row = 0; row < ROWS; ++row) {
-      for (let col = 0; col < boxes[row].length; ++col) {
-        const node = BT.levels[row][col];
-        // if(!node) continue;
-
-        const box = boxes[row][col];
-
-        // create edges to children
-
-        const [x1, y1] = box.getCenter();
-        if (row != ROWS - 1) {
-          // left line
-          let [x2, y2] = boxes[row + 1][2 * col].getCenter();
-          edges.push(
-            <line
-              class={`${style.edge} ${
-                node && node.left ? style['edge--real'] : ''
-              }`}
-              x1={x1}
-              y1={y1}
-              x2={x2}
-              y2={y2}
-            ></line>
-          );
-
-          // right line
-          [x2, y2] = boxes[row + 1][2 * col + 1].getCenter();
-          edges.push(
-            <line
-              class={`${style.edge} ${
-                node && node.right ? style['edge--real'] : ''
-              }`}
-              x1={x1}
-              y1={y1}
-              x2={x2}
-              y2={y2}
-            ></line>
-          );
-        }
-
-        // create the node
-
-        // let radius = 50;
-        let radius = Math.min(
-          20,
-          Math.floor(Math.min(box.width, box.height) / 3)
+      nodes.push(
+        <circle
+          {...(node && { tabindex: 0 })}
+          data-node-index={nodes.length}
+          class={`${style.node} ${node ? style['node--real'] : ''}`}
+          cx={cx}
+          cy={cy}
+          r={radius}
+          onKeyDown={(e) => {
+            this.onNodeKeyDown(e);
+          }}
+        ></circle>
+      );
+      if (node) {
+        texts.push(
+          <text
+            font-weight={700}
+            x={cx - (node.val.toString().length * LETTER_WIDTH) / 2}
+            y={cy + FONT_HEIGHT / 2 - FONT_HEIGHT / 8}
+          >
+            {node.val}
+          </text>
         );
-        nodes.push(
-          <circle
-            class={`${style.node} ${node ? style['node--real'] : ''}`}
-            cx={x1}
-            cy={y1}
-            r={radius}
-          ></circle>
-        );
-        if (node) {
-          texts.push(
-            <text
-              font-weight={700}
-              x={x1 - (node.val.toString().length * LETTER_WIDTH) / 2}
-              y={y1 + FONT_HEIGHT / 2 - FONT_HEIGHT / 8}
-            >
-              {node.val}
-            </text>
-          );
-        }
       }
     }
 

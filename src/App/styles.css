@@ -36,6 +36,10 @@ aside {
     padding: 0.5em;
 }
 
+aside > * {
+    margin-bottom: 0.5rem;
+}
+
 input {
     font-size: 1em;
     font-family: 'Courier New', Courier, monospace;
@@ -45,6 +49,15 @@ input {
     width: 100%;
     resize: none;
     border: none;
-    outline: black solid 2px;
+    outline: rgba(0, 0, 0, 0.25) solid 2px;
     border-radius: 10px;
+}
+
+input:focus {
+    outline-color: black;
+}
+
+button {
+    font-size: 1em;
+    color: black;
 }

@@ -17,6 +17,18 @@ svg {
     stroke: lightgray;
     fill: white;
     transition: all 250ms ease;
+    border-radius: 100%;
+    outline-offset: 2px;
+}
+
+.node:focus {
+    outline: black solid 1px;
+    fill: orange;
+}
+
+.node:not(.node--real) {
+    user-select: none;
+    pointer-events: none;
 }
 
 .node--real {
