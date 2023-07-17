@@ -10,9 +10,9 @@ body {
     margin: 0;
     padding: 0.5em;
     display: grid;
-    grid-auto-columns: 6fr 4fr;
     grid-auto-flow: column;
-    gap: 0.5em;
+    grid-template-columns: 6fr 4fr;
+    gap: 0.5rem;
 
     height: 100vh;
 }
@@ -27,13 +27,14 @@ main {
     padding: 0.5em;
     overflow: auto;
 
-    display: flex;
+    display: block;
     justify-content: center;
     align-items: center;
 }
 
 aside {
     padding: 0.5em;
+    overflow: hidden;
 }
 
 aside > * {

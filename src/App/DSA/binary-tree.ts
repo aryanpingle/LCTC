@@ -114,7 +114,7 @@ export default class BinaryTree {
 
   toString(): string {
     // @ts-ignore
-    return Object.entries()
+    return Object.entries(this.nodes)
       .map(([key, node]: [string, Node]) => `${key}:${node.val}`)
       .join('/');
   }

@@ -16,7 +16,8 @@ svg {
 .node {
     stroke: lightgray;
     fill: white;
-    transition: all 250ms ease;
+    transition: 250ms ease;
+    transition-property: cx, cy, radius;
     border-radius: 100%;
     outline-offset: 2px;
 }

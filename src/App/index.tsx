@@ -1,10 +1,9 @@
 import { Component, Fragment, h, render } from 'preact';
-
-import BinaryTreeSVG from './BinaryTree/BinaryTreeSVG';
+import BinaryTreeSVG from './BinaryTreeSVG';
+import ExportTextarea from './ExportTextarea';
+import { GLOBAL_BT } from './BinaryTreeSVG/globals';
 
 import './styles.css';
-
-import { GLOBAL_BT } from './BinaryTree/globals';
 
 interface Props {}
 
@@ -26,6 +25,8 @@ class App extends Component<Props, State> {
   };
 
   render(props: Props, state: State) {
+    console.log("App rerender");
+
     return (
       <Fragment>
         <main>
@@ -40,6 +41,7 @@ class App extends Component<Props, State> {
           >
             Randomize
           </button>
+          <ExportTextarea></ExportTextarea>
           <div className="options-container"></div>
         </aside>
       </Fragment>

@@ -4,7 +4,7 @@ import { Box, getLetterWidth, linkRef, removeUnit } from '../utils';
 import style from './styles.css';
 
 import { GLOBAL_BT } from './globals';
-import { leftChild, parent, rightChild } from './binary-tree';
+import { leftChild, parent, rightChild } from '../DSA/binary-tree';
 
 interface Props {}
 
