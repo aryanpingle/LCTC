@@ -139,9 +139,6 @@ export default class BinaryTreeSVG extends Component<Props, State> {
     const FINAL_WIDTH = BLOCK * (2 ** GLOBAL_BT.height - 1);
     const BLOCK_HEIGHT = Math.round(FINAL_WIDTH / ROWS);
 
-    const HEIGHT_MULTIPLIER =
-      GLOBAL_BT.height >= 2 ? 2 ** (GLOBAL_BT.height - 2) : 1;
-
     const FONT_HEIGHT =
       removeUnit(
         window.getComputedStyle(this.svgElement).getPropertyValue('font-size'),
@@ -156,14 +153,10 @@ export default class BinaryTreeSVG extends Component<Props, State> {
         const COLS = 2 ** rowIndex;
         const colIndex = rowIndex == 0 ? 0 : index + 1 - COLS;
 
-        // const BLOCK_WIDTH = Math.floor(CANVAS_WIDTH / COLS);
-
         return new Box(
           BLOCK * colIndex * 2 ** (ROWS - rowIndex),
-          // HEIGHT_MULTIPLIER * rowIndex * BLOCK,
           rowIndex * BLOCK_HEIGHT,
           BLOCK * (2 ** (ROWS - rowIndex) - 1),
-          // HEIGHT_MULTIPLIER * BLOCK
           BLOCK_HEIGHT,
         );
       });
@@ -250,7 +243,6 @@ export default class BinaryTreeSVG extends Component<Props, State> {
 
     this.setState({
       WIDTH: BLOCK * (2 ** GLOBAL_BT.height - 1),
-      // HEIGHT: HEIGHT_MULTIPLIER * BLOCK * GLOBAL_BT.height,
       HEIGHT: BLOCK_HEIGHT * GLOBAL_BT.height,
       nodes: nodes,
       edges: edges,
@@ -268,8 +260,6 @@ export default class BinaryTreeSVG extends Component<Props, State> {
         ref={linkRef(this, 'svgContainer')}
       >
         <svg
-          // width={WIDTH + 2 * padding}
-          // height={HEIGHT + 2 * padding}
           ref={linkRef(this, 'svgElement')}
           viewBox={`${-padding} ${-padding} ${WIDTH + 2 * padding} ${
             HEIGHT + 2 * padding
