@@ -1,10 +1,9 @@
 import { Component, VNode, h, render } from 'preact';
 import { Box, getLetterWidth, linkRef, removeUnit } from '../utils';
-
-import style from './styles.css';
-
 import { GLOBAL_BT } from './globals';
 import { leftChild, parent, rightChild } from '../DSA/binary-tree';
+
+import style from './styles.css';
 
 interface Props {}
 
@@ -16,19 +15,48 @@ interface State {
   texts: VNode<SVGTextElement>[];
 }
 
+const styles = {
+  node: {
+    stroke: 'lightgray',
+    fill: 'white',
+    borderRadius: '100%',
+    'outline-offset': '2px',
+  },
+
+  'node:not(.node--real)': {
+    'user-select': 'none',
+    'pointer-events': 'none',
+  },
+
+  'node--real': {
+    'stroke-width': 2,
+    stroke: 'black',
+    fill: 'rgb(61, 145, 255)',
+  },
+
+  edge: {
+    stroke: 'lightgray',
+  },
+
+  'edge--real': {
+    'stroke-width': 2,
+    stroke: 'black',
+  },
+
+  text: {
+    'user-select': 'none',
+    'pointer-events': 'none',
+    'font-size': '0.5em',
+  },
+};
+
 export default class BinaryTreeSVG extends Component<Props, State> {
-  private resizeObserver: ResizeObserver;
   svgElement: SVGElement;
-  svgContainer: HTMLElement;
   canvas: HTMLCanvasElement;
   postRenderCallback: Function;
 
   constructor(props: Props) {
     super(props);
-
-    this.resizeObserver = new ResizeObserver((entries) => {
-      this._onResize(entries);
-    });
 
     this.setState({
       WIDTH: 100,
@@ -39,6 +67,11 @@ export default class BinaryTreeSVG extends Component<Props, State> {
     });
   }
 
+  componentDidMount(): void {
+    GLOBAL_BT.subscribe(this.buildSVG.bind(this));
+    this.buildSVG();
+  }
+
   componentDidUpdate(
     previousProps: Readonly<Props>,
     previousState: Readonly<State>,
@@ -47,24 +80,6 @@ export default class BinaryTreeSVG extends Component<Props, State> {
     if (!this.postRenderCallback) return;
     this.postRenderCallback.call(null);
     this.postRenderCallback = undefined;
-  }
-
-  componentDidMount(): void {
-    this.resizeObserver.observe(this.svgContainer);
-    this.calculateSize();
-    GLOBAL_BT.subscribe(this.buildSVG.bind(this));
-  }
-
-  private _onResize(entries: ResizeObserverEntry[]) {
-    this.calculateSize();
-  }
-
-  calculateSize() {
-    this.setState({
-      WIDTH: this.svgContainer.clientWidth,
-      HEIGHT: this.svgContainer.clientHeight,
-    });
-    this.buildSVG();
   }
 
   onNodeKeyDown(event: KeyboardEvent) {
@@ -117,11 +132,15 @@ export default class BinaryTreeSVG extends Component<Props, State> {
     const nodes: VNode<SVGCircleElement>[] = [];
     const texts: VNode<SVGTextElement>[] = [];
 
-    const CANVAS_HEIGHT = this.state.HEIGHT;
-    const CANVAS_WIDTH = this.state.WIDTH;
+    const BLOCK = 50;
 
     const ROWS = GLOBAL_BT.height;
-    const BLOCK_HEIGHT = Math.round(CANVAS_HEIGHT / ROWS);
+
+    const FINAL_WIDTH = BLOCK * (2 ** GLOBAL_BT.height - 1);
+    const BLOCK_HEIGHT = Math.round(FINAL_WIDTH / ROWS);
+
+    const HEIGHT_MULTIPLIER =
+      GLOBAL_BT.height >= 2 ? 2 ** (GLOBAL_BT.height - 2) : 1;
 
     const FONT_HEIGHT =
       removeUnit(
@@ -130,19 +149,21 @@ export default class BinaryTreeSVG extends Component<Props, State> {
 
     const LETTER_WIDTH = getLetterWidth(this.canvas, FONT_HEIGHT);
 
-    const boxes = new Array((1 << GLOBAL_BT.height) - 1)
+    const boxes = new Array(2 ** GLOBAL_BT.height - 1)
       .fill(0)
       .map((_, index) => {
         const rowIndex = Math.floor(Math.log2(index + 1));
         const COLS = 2 ** rowIndex;
         const colIndex = rowIndex == 0 ? 0 : index + 1 - COLS;
 
-        const BLOCK_WIDTH = Math.floor(CANVAS_WIDTH / COLS);
+        // const BLOCK_WIDTH = Math.floor(CANVAS_WIDTH / COLS);
 
         return new Box(
-          colIndex * BLOCK_WIDTH,
+          BLOCK * colIndex * 2 ** (ROWS - rowIndex),
+          // HEIGHT_MULTIPLIER * rowIndex * BLOCK,
           rowIndex * BLOCK_HEIGHT,
-          BLOCK_WIDTH,
+          BLOCK * (2 ** (ROWS - rowIndex) - 1),
+          // HEIGHT_MULTIPLIER * BLOCK
           BLOCK_HEIGHT
         );
       });
@@ -168,6 +189,10 @@ export default class BinaryTreeSVG extends Component<Props, State> {
             y1={cy}
             x2={x2}
             y2={y2}
+            style={{
+              ...styles.edge,
+              ...(node && node.left && styles['edge--real']),
+            }}
           ></line>
         );
 
@@ -182,17 +207,17 @@ export default class BinaryTreeSVG extends Component<Props, State> {
             y1={cy}
             x2={x2}
             y2={y2}
+            style={{
+              ...styles.edge,
+              ...(node && node.right && styles['edge--real']),
+            }}
           ></line>
         );
       }
 
       // create the node
 
-      // let radius = 50;
-      let radius = Math.min(
-        20,
-        Math.floor(Math.min(box.width, box.height) / 3)
-      );
+      let radius = Math.round(BLOCK * 0.45);
       nodes.push(
         <circle
           {...(node && { tabindex: 0 })}
@@ -203,6 +228,10 @@ export default class BinaryTreeSVG extends Component<Props, State> {
           r={radius}
           onKeyDown={(e) => {
             this.onNodeKeyDown(e);
+          }}
+          style={{
+            ...styles.node,
+            ...(node && styles['node--real']),
           }}
         ></circle>
       );
@@ -220,6 +249,9 @@ export default class BinaryTreeSVG extends Component<Props, State> {
     }
 
     this.setState({
+      WIDTH: BLOCK * (2 ** GLOBAL_BT.height - 1),
+      // HEIGHT: HEIGHT_MULTIPLIER * BLOCK * GLOBAL_BT.height,
+      HEIGHT: BLOCK_HEIGHT * GLOBAL_BT.height,
       nodes: nodes,
       edges: edges,
       texts: texts,
@@ -228,6 +260,7 @@ export default class BinaryTreeSVG extends Component<Props, State> {
 
   render({}: Props, { WIDTH, HEIGHT, edges, nodes, texts }: State) {
     // console.log('BTSVG render');
+    const padding = 10;
 
     return (
       <div
@@ -235,8 +268,15 @@ export default class BinaryTreeSVG extends Component<Props, State> {
         ref={linkRef(this, 'svgContainer')}
       >
         <svg
+          // width={WIDTH + 2 * padding}
+          // height={HEIGHT + 2 * padding}
           ref={linkRef(this, 'svgElement')}
-          viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
+          viewBox={`${-padding} ${-padding} ${WIDTH + 2 * padding} ${
+            HEIGHT + 2 * padding
+          }`}
+          style={{
+            fontFamily: 'Courier New',
+          }}
         >
           <g id="group--lines">{...edges || []}</g>
           <g id="group--nodes">{...nodes || []}</g>

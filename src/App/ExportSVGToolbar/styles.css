@@ -1,0 +1,14 @@
+.export-toolbar {
+    border-radius: inherit;
+    width: 100%;
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: 1fr;
+    gap: 0.5rem;
+}
+
+.export-toolbar > button {
+    background-color: white;
+    padding: 0.5rem;
+    outline: none;
+}

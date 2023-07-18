@@ -2,6 +2,7 @@ import { Component, Fragment, h, render } from 'preact';
 import BinaryTreeSVG from './BinaryTreeSVG';
 import ExportTextarea from './ExportTextarea';
 import { GLOBAL_BT } from './BinaryTreeSVG/globals';
+import ExportSVGToolbar from './ExportSVGToolbar';
 
 import './styles.css';
 
@@ -10,6 +11,8 @@ interface Props {}
 interface State {}
 
 class App extends Component<Props, State> {
+  offscreenDownloadButton: HTMLLinkElement;
+
   constructor(props: Props) {
     super(props);
   }
@@ -31,6 +34,7 @@ class App extends Component<Props, State> {
       <Fragment>
         <main>
           <BinaryTreeSVG></BinaryTreeSVG>
+          <ExportSVGToolbar></ExportSVGToolbar>
         </main>
         <aside>
           <input name="bt-input" onChange={this.inputChanged}></input>

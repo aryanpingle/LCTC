@@ -126,9 +126,9 @@ export default class BinaryTree {
   }
 
   randomise() {
-    const arr = new Array(40)
+    const arr = new Array(14)
       .fill(0)
-      .map((_, i) => (Math.random() > 0.8 ? null : i));
+      .map((_, i) => (Math.random() > 0.8 ? null : 2*i));
     arr.unshift(1);
     this.buildFromArray(arr);
   }
