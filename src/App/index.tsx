@@ -28,7 +28,7 @@ class App extends Component<Props, State> {
   };
 
   render(props: Props, state: State) {
-    console.log("App rerender");
+    console.log('App rerender');
 
     return (
       <Fragment>

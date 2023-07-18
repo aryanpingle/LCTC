@@ -39,10 +39,10 @@ export default class ExportSVGToolbar extends Component<Props, State> {
 
   private getSVGBase64 = () => {
     let SVGstring = new XMLSerializer().serializeToString(
-      document.querySelector("svg")
+      document.querySelector('svg'),
     );
     return window.btoa(SVGstring);
-  }
+  };
 
   downloadSVG = () => {
     let SVGBase64 = this.getSVGBase64();

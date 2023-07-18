@@ -75,7 +75,7 @@ export default class BinaryTreeSVG extends Component<Props, State> {
   componentDidUpdate(
     previousProps: Readonly<Props>,
     previousState: Readonly<State>,
-    snapshot: any
+    snapshot: any,
   ): void {
     if (!this.postRenderCallback) return;
     this.postRenderCallback.call(null);
@@ -84,7 +84,7 @@ export default class BinaryTreeSVG extends Component<Props, State> {
 
   onNodeKeyDown(event: KeyboardEvent) {
     let nodeIndex = parseInt(
-      (event.target as HTMLElement).getAttribute('data-node-index')
+      (event.target as HTMLElement).getAttribute('data-node-index'),
     );
 
     if (event.code === 'ArrowLeft' || event.code === 'ArrowRight') {
@@ -108,7 +108,7 @@ export default class BinaryTreeSVG extends Component<Props, State> {
       GLOBAL_BT.appendNode(
         nodeIndex,
         event.code === 'ArrowLeft' ? 'left' : 'right',
-        '*'
+        '*',
       );
     }
     if (event.code === 'ArrowUp') {
@@ -144,7 +144,7 @@ export default class BinaryTreeSVG extends Component<Props, State> {
 
     const FONT_HEIGHT =
       removeUnit(
-        window.getComputedStyle(this.svgElement).getPropertyValue('font-size')
+        window.getComputedStyle(this.svgElement).getPropertyValue('font-size'),
       ) / 2;
 
     const LETTER_WIDTH = getLetterWidth(this.canvas, FONT_HEIGHT);
@@ -164,7 +164,7 @@ export default class BinaryTreeSVG extends Component<Props, State> {
           rowIndex * BLOCK_HEIGHT,
           BLOCK * (2 ** (ROWS - rowIndex) - 1),
           // HEIGHT_MULTIPLIER * BLOCK
-          BLOCK_HEIGHT
+          BLOCK_HEIGHT,
         );
       });
 
@@ -193,7 +193,7 @@ export default class BinaryTreeSVG extends Component<Props, State> {
               ...styles.edge,
               ...(node && node.left && styles['edge--real']),
             }}
-          ></line>
+          ></line>,
         );
 
         // right line
@@ -211,7 +211,7 @@ export default class BinaryTreeSVG extends Component<Props, State> {
               ...styles.edge,
               ...(node && node.right && styles['edge--real']),
             }}
-          ></line>
+          ></line>,
         );
       }
 
@@ -233,7 +233,7 @@ export default class BinaryTreeSVG extends Component<Props, State> {
             ...styles.node,
             ...(node && styles['node--real']),
           }}
-        ></circle>
+        ></circle>,
       );
       if (node) {
         texts.push(
@@ -243,7 +243,7 @@ export default class BinaryTreeSVG extends Component<Props, State> {
             y={cy + FONT_HEIGHT / 2 - FONT_HEIGHT / 8}
           >
             {node.val}
-          </text>
+          </text>,
         );
       }
     }
