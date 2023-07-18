@@ -1,0 +1,14 @@
+.node:focus {
+    outline: black solid 1px;
+    fill: orange !important;
+}
+
+.node:not(.node--real) {
+    user-select: none;
+    pointer-events: none;
+}
+
+.node:hover {
+    cursor: pointer;
+    fill: rgb(61, 255, 129);
+}

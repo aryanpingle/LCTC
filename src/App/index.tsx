@@ -37,6 +37,7 @@ class App extends Component<Props, State> {
           <ExportSVGToolbar></ExportSVGToolbar>
         </main>
         <aside>
+          <h1>Binary Trees</h1>
           <input name="bt-input" onChange={this.inputChanged}></input>
           <button
             onClick={(e) => {

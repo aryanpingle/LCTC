@@ -4,6 +4,7 @@ import { GLOBAL_BT } from './globals';
 import { leftChild, parent, rightChild } from '../DSA/binary-tree';
 
 import style from './styles.css';
+import getBTSVGNode from './BTSVGNode';
 
 interface Props {}
 
@@ -11,29 +12,10 @@ interface State {
   WIDTH: number;
   HEIGHT: number;
   edges: VNode<SVGLineElement>[];
-  nodes: VNode<SVGCircleElement>[];
-  texts: VNode<SVGTextElement>[];
+  nodes: VNode<SVGGElement>[];
 }
 
 const styles = {
-  node: {
-    stroke: 'lightgray',
-    fill: 'white',
-    borderRadius: '100%',
-    'outline-offset': '2px',
-  },
-
-  'node:not(.node--real)': {
-    'user-select': 'none',
-    'pointer-events': 'none',
-  },
-
-  'node--real': {
-    'stroke-width': 2,
-    stroke: 'black',
-    fill: 'rgb(61, 145, 255)',
-  },
-
   edge: {
     stroke: 'lightgray',
   },
@@ -41,12 +23,6 @@ const styles = {
   'edge--real': {
     'stroke-width': 2,
     stroke: 'black',
-  },
-
-  text: {
-    'user-select': 'none',
-    'pointer-events': 'none',
-    'font-size': '0.5em',
   },
 };
 
@@ -63,7 +39,6 @@ export default class BinaryTreeSVG extends Component<Props, State> {
       HEIGHT: 100,
       edges: [],
       nodes: [],
-      texts: [],
     });
   }
 
@@ -94,16 +69,20 @@ export default class BinaryTreeSVG extends Component<Props, State> {
           : rightChild(nodeIndex);
 
       if (childIndex in GLOBAL_BT.nodes) {
-        // @ts-ignore
-        event.target.parentElement.children[childIndex].focus();
+        (
+          document.querySelector('#group--nodes').children[childIndex]
+            .firstElementChild as HTMLElement
+        ).focus();
         return;
       }
 
       // no child exists, create one
       // this will cause a rerender, so focus it after render
       this.postRenderCallback = () => {
-        // @ts-ignore
-        event.target.parentElement.children[childIndex].focus();
+        (
+          document.querySelector('#group--nodes').children[childIndex]
+            .firstElementChild as HTMLElement
+        ).focus();
       };
       GLOBAL_BT.appendNode(
         nodeIndex,
@@ -114,15 +93,19 @@ export default class BinaryTreeSVG extends Component<Props, State> {
     if (event.code === 'ArrowUp') {
       let parentIndex = parent(nodeIndex);
       if (parentIndex < 0) return;
-      // @ts-ignore
-      event.target.parentElement.children[parentIndex].focus();
+      (
+        document.querySelector('#group--nodes').children[parentIndex]
+          .firstElementChild as HTMLElement
+      ).focus();
     }
     if (event.code === 'Backspace') {
       // Focus the parent, then delete this node
       let parentIndex = parent(nodeIndex);
       if (parentIndex < 0) return;
-      // @ts-ignore
-      event.target.parentElement.children[parentIndex].focus();
+      (
+        document.querySelector('#group--nodes').children[parentIndex]
+          .firstElementChild as HTMLElement
+      ).focus();
       GLOBAL_BT.deleteNode(nodeIndex);
     }
   }
@@ -130,7 +113,6 @@ export default class BinaryTreeSVG extends Component<Props, State> {
   buildSVG(): void {
     const edges: VNode<SVGLineElement>[] = [];
     const nodes: VNode<SVGCircleElement>[] = [];
-    const texts: VNode<SVGTextElement>[] = [];
 
     const BLOCK = 50;
 
@@ -210,35 +192,23 @@ export default class BinaryTreeSVG extends Component<Props, State> {
 
       // create the node
 
-      let radius = Math.round(BLOCK * 0.45);
+      let radius = BLOCK >> 1;
       nodes.push(
-        <circle
-          {...(node && { tabindex: 0 })}
-          data-node-index={nodes.length}
-          class={`${style.node} ${node ? style['node--real'] : ''}`}
-          cx={cx}
-          cy={cy}
-          r={radius}
-          onKeyDown={(e) => {
-            this.onNodeKeyDown(e);
-          }}
-          style={{
-            ...styles.node,
-            ...(node && styles['node--real']),
-          }}
-        ></circle>,
+        getBTSVGNode(
+          {
+            center: [cx, cy],
+            radius: radius,
+            real: !!node,
+            index: index,
+            text: node && node.val,
+            onKeyDown: (e: KeyboardEvent) => {
+              this.onNodeKeyDown(e);
+            },
+          },
+          LETTER_WIDTH,
+          FONT_HEIGHT,
+        ),
       );
-      if (node) {
-        texts.push(
-          <text
-            font-weight={700}
-            x={cx - (node.val.toString().length * LETTER_WIDTH) / 2}
-            y={cy + FONT_HEIGHT / 2 - FONT_HEIGHT / 8}
-          >
-            {node.val}
-          </text>,
-        );
-      }
     }
 
     this.setState({
@@ -246,11 +216,10 @@ export default class BinaryTreeSVG extends Component<Props, State> {
       HEIGHT: BLOCK_HEIGHT * GLOBAL_BT.height,
       nodes: nodes,
       edges: edges,
-      texts: texts,
     });
   }
 
-  render({}: Props, { WIDTH, HEIGHT, edges, nodes, texts }: State) {
+  render({}: Props, { WIDTH, HEIGHT, edges, nodes }: State) {
     // console.log('BTSVG render');
     const padding = 10;
 
@@ -270,7 +239,6 @@ export default class BinaryTreeSVG extends Component<Props, State> {
         >
           <g id="group--lines">{...edges || []}</g>
           <g id="group--nodes">{...nodes || []}</g>
-          <g id="group--texts">{...texts || []}</g>
         </svg>
         <canvas
           style={{ display: 'none' }}
