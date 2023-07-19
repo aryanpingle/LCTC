@@ -1,10 +1,12 @@
 import { Component, Fragment, h, render } from 'preact';
 import BinaryTreeSVG from './BinaryTreeSVG';
-import ExportTextarea from './ExportTextarea';
+import ExportSection from './Components/ExportSection';
 import { GLOBAL_BT } from './BinaryTreeSVG/globals';
-import ExportSVGToolbar from './ExportSVGToolbar';
+import ExportSVGToolbar from './Components/ExportSVGToolbar';
 
 import './styles.css';
+import InputSection from './Components/InputSection';
+import Controls from './Components/Controls';
 
 interface Props {}
 
@@ -17,10 +19,9 @@ class App extends Component<Props, State> {
     super(props);
   }
 
-  private inputChanged = (event: Event) => {
-    let text = (event.target as HTMLInputElement).value;
+  private inputChanged = (inputText: string) => {
     try {
-      let arr = JSON.parse(text);
+      let arr = JSON.parse(inputText);
       if (Array.isArray(arr)) GLOBAL_BT.buildFromArray(arr);
     } catch (e: any) {
       return;
@@ -38,7 +39,8 @@ class App extends Component<Props, State> {
         </main>
         <aside>
           <h1>Binary Trees</h1>
-          <input name="bt-input" onChange={this.inputChanged}></input>
+          <Controls></Controls>
+          <InputSection onInputChange={this.inputChanged}></InputSection>
           <button
             onClick={(e) => {
               GLOBAL_BT.randomise();
@@ -46,8 +48,9 @@ class App extends Component<Props, State> {
           >
             Randomize
           </button>
-          <ExportTextarea></ExportTextarea>
+          <ExportSection></ExportSection>
           <div className="options-container"></div>
+          <footer>made by Aryan Pingle</footer>
         </aside>
       </Fragment>
     );

@@ -1,6 +1,5 @@
 .node:focus {
-    outline: black solid 1px;
-    fill: orange !important;
+    outline: rgba(0, 0, 0, 0.5) solid 5px;
 }
 
 .node:not(.node--real) {
@@ -10,5 +9,4 @@
 
 .node:hover {
     cursor: pointer;
-    fill: rgb(61, 255, 129);
 }

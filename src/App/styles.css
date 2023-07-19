@@ -3,16 +3,18 @@
 }
 
 :root {
-    font-size: 2rem;
+    font-size: 1.2rem;
+
+    font-family: 'Open Sans', sans-serif;
 }
 
 body {
     margin: 0;
-    padding: 0.5em;
+    padding: 1rem;
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 0.5rem;
+    gap: 1rem;
     background-color: rgb(240, 240, 240);
 
     height: 100vh;
@@ -40,23 +42,38 @@ aside {
 
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
     width: 10px;
-
 }
 
 aside > * {
     border-radius: inherit;
-    background-color: white;
 }
 
 h1 {
+    background-color: transparent;
+    font-size: 3em;
     height: auto;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    text-transform: uppercase;
+    text-align: center;
     margin: 0;
+}
+
+section {
+    padding: 1rem;
+    background-color: white;
+}
+
+section > header {
+    font-style: italic;
+    font-size: 1em;
+    margin-bottom: 0.5em;
+    font-weight: 300;
+}
+
+section > header > strong {
+    text-transform: uppercase;
+    display: block;
+    font-size: 1.2em;
+    font-style: normal;
 }
 
 input {
@@ -88,4 +105,13 @@ button {
 
 button:hover {
     background-color: rgb(230, 230, 230) !important;
+}
+
+footer {
+    /* background-color: white; */
+    color: lightgray;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0.5rem;
 }

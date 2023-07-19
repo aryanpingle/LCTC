@@ -1,5 +1,5 @@
 import { render, h, Component, Fragment } from 'preact';
-import { linkRef } from '../utils';
+import { linkRef } from '../../utils';
 
 import style from './styles.css';
 

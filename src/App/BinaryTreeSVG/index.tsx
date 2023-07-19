@@ -108,6 +108,14 @@ export default class BinaryTreeSVG extends Component<Props, State> {
       ).focus();
       GLOBAL_BT.deleteNode(nodeIndex);
     }
+    if (event.code === 'Space') {
+      const colors = ['springgreen', 'deeppink'];
+      const target = event.target as SVGCircleElement;
+      let colorIndex = parseInt(target.getAttribute('colorIndex') ?? '0');
+      colorIndex = (colorIndex + 1) % colors.length;
+      target.setAttribute('colorIndex', '' + colorIndex);
+      target.style.fill = colors[colorIndex];
+    }
   }
 
   buildSVG(): void {
@@ -121,10 +129,9 @@ export default class BinaryTreeSVG extends Component<Props, State> {
     const FINAL_WIDTH = BLOCK * (2 ** GLOBAL_BT.height - 1);
     const BLOCK_HEIGHT = Math.round(FINAL_WIDTH / ROWS);
 
-    const FONT_HEIGHT =
-      removeUnit(
-        window.getComputedStyle(this.svgElement).getPropertyValue('font-size'),
-      ) / 2;
+    const FONT_HEIGHT = removeUnit(
+      window.getComputedStyle(this.svgElement).getPropertyValue('font-size'),
+    );
 
     const LETTER_WIDTH = getLetterWidth(this.canvas, FONT_HEIGHT);
 

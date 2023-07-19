@@ -1,0 +1,19 @@
+.controls-bar {
+    display: block;
+    text-align: center;
+    font-size: 0.75em;
+    color: rgba(0, 0, 0, 0.75);
+    line-height: 2.5;
+    margin: 1em 0;
+}
+
+.controls-item {
+    display: inline-block;
+    margin-right: 0.5rem;
+}
+
+.key {
+    background-color: lightgray;
+    padding: 2px 8px;
+    border-radius: 5px;
+}

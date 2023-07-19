@@ -22,7 +22,7 @@ const styles = {
   'node--real': {
     'stroke-width': 2,
     stroke: 'black',
-    fill: 'rgb(61, 145, 255)',
+    fill: 'springgreen',
   },
 };
 
@@ -50,9 +50,12 @@ export default function getBTSVGNode(
       ></circle>
       {real && (
         <text
-          x={center[0] - (text.toString().length * LETTER_WIDTH) / 2}
-          y={center[1] + FONT_HEIGHT / 2 - FONT_HEIGHT / 8}
+          x={Math.round(
+            center[0] - (text.toString().length * LETTER_WIDTH) / 2,
+          )}
+          y={Math.round(center[1] + FONT_HEIGHT / 2 - FONT_HEIGHT / 8)}
           style={{ fontWeight: 700 }}
+          font-size={FONT_HEIGHT}
         >
           {text}
         </text>
