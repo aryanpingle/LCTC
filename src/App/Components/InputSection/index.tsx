@@ -1,14 +1,24 @@
 import { h, Component } from 'preact';
 
 import styles from './styles.css';
+import { DataStructure } from '../../DSA';
 
 interface Props {
-  onInputChange: Function;
+  structure: DataStructure<any>;
 }
 
 interface State {}
 
 export default class InputSection extends Component<Props, State> {
+  private inputChanged = (inputText: string) => {
+    try {
+      let arr = JSON.parse(inputText);
+      if (Array.isArray(arr)) this.props.structure.buildFromArray(arr);
+    } catch (e: any) {
+      return;
+    }
+  };
+
   render() {
     return (
       <section>
@@ -20,7 +30,7 @@ export default class InputSection extends Component<Props, State> {
           class={styles['code-input']}
           id="code-input"
           onChange={(event) => {
-            this.props.onInputChange((event.target as HTMLInputElement).value);
+            this.inputChanged((event.target as HTMLInputElement).value);
           }}
         />
       </section>

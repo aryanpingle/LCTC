@@ -1,12 +1,14 @@
-import { Component, VNode, h, render } from 'preact';
+import { h, VNode } from 'preact';
 import { Box, getLetterWidth, linkRef, removeUnit } from '../utils';
-import { GLOBAL_BT } from './globals';
-import { leftChild, parent, rightChild } from '../DSA/binary-tree';
+import BinaryTree, { leftChild, parent, rightChild } from '../DSA/binary-tree';
 
 import style from './styles.css';
 import getBTSVGNode from './BTSVGNode';
+import StructureSVG from '../StructureSVG';
 
-interface Props {}
+interface Props {
+  BT: BinaryTree;
+}
 
 interface State {
   WIDTH: number;
@@ -26,7 +28,7 @@ const styles = {
   },
 };
 
-export default class BinaryTreeSVG extends Component<Props, State> {
+export default class BinaryTreeSVG extends StructureSVG<Props, State> {
   svgElement: SVGElement;
   canvas: HTMLCanvasElement;
   postRenderCallback: Function;
@@ -43,7 +45,8 @@ export default class BinaryTreeSVG extends Component<Props, State> {
   }
 
   componentDidMount(): void {
-    GLOBAL_BT.subscribe(this.buildSVG.bind(this));
+    console.log('this', this);
+    this.props.BT.subscribe(this.buildSVG.bind(this));
     this.buildSVG();
   }
 
@@ -68,7 +71,7 @@ export default class BinaryTreeSVG extends Component<Props, State> {
           ? leftChild(nodeIndex)
           : rightChild(nodeIndex);
 
-      if (childIndex in GLOBAL_BT.nodes) {
+      if (childIndex in this.props.BT.nodes) {
         (
           document.querySelector('#group--nodes').children[childIndex]
             .firstElementChild as HTMLElement
@@ -84,7 +87,7 @@ export default class BinaryTreeSVG extends Component<Props, State> {
             .firstElementChild as HTMLElement
         ).focus();
       };
-      GLOBAL_BT.appendNode(
+      this.props.BT.appendNode(
         nodeIndex,
         event.code === 'ArrowLeft' ? 'left' : 'right',
         '*',
@@ -106,7 +109,7 @@ export default class BinaryTreeSVG extends Component<Props, State> {
         document.querySelector('#group--nodes').children[parentIndex]
           .firstElementChild as HTMLElement
       ).focus();
-      GLOBAL_BT.deleteNode(nodeIndex);
+      this.props.BT.deleteNode(nodeIndex);
     }
     if (event.code === 'Space') {
       const colors = ['springgreen', 'deeppink'];
@@ -124,9 +127,9 @@ export default class BinaryTreeSVG extends Component<Props, State> {
 
     const BLOCK = 50;
 
-    const ROWS = GLOBAL_BT.height;
+    const ROWS = this.props.BT.height;
 
-    const FINAL_WIDTH = BLOCK * (2 ** GLOBAL_BT.height - 1);
+    const FINAL_WIDTH = BLOCK * (2 ** this.props.BT.height - 1);
     const BLOCK_HEIGHT = Math.round(FINAL_WIDTH / ROWS);
 
     const FONT_HEIGHT = removeUnit(
@@ -135,7 +138,7 @@ export default class BinaryTreeSVG extends Component<Props, State> {
 
     const LETTER_WIDTH = getLetterWidth(this.canvas, FONT_HEIGHT);
 
-    const boxes = new Array(2 ** GLOBAL_BT.height - 1)
+    const boxes = new Array(2 ** this.props.BT.height - 1)
       .fill(0)
       .map((_, index) => {
         const rowIndex = Math.floor(Math.log2(index + 1));
@@ -152,7 +155,7 @@ export default class BinaryTreeSVG extends Component<Props, State> {
 
     for (let index = 0; index < boxes.length; ++index) {
       const row = Math.floor(Math.log2(index + 1));
-      const node = GLOBAL_BT.nodes[index];
+      const node = this.props.BT.nodes[index];
 
       const box = boxes[index];
 
@@ -219,8 +222,8 @@ export default class BinaryTreeSVG extends Component<Props, State> {
     }
 
     this.setState({
-      WIDTH: BLOCK * (2 ** GLOBAL_BT.height - 1),
-      HEIGHT: BLOCK_HEIGHT * GLOBAL_BT.height,
+      WIDTH: BLOCK * (2 ** this.props.BT.height - 1),
+      HEIGHT: BLOCK_HEIGHT * this.props.BT.height,
       nodes: nodes,
       edges: edges,
     });

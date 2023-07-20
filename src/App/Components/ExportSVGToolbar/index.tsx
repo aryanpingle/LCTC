@@ -1,7 +1,8 @@
-import { render, h, Component, Fragment } from 'preact';
+import { h, Component } from 'preact';
 import { linkRef } from '../../utils';
 
 import style from './styles.css';
+import StructureSVG from '../../StructureSVG';
 
 interface Props {}
 
@@ -16,11 +17,9 @@ export default class ExportSVGToolbar extends Component<Props, State> {
     super(props);
   }
 
-  downloadImage = (codec: 'png' | 'jpeg' | 'webp') => {
-    let SVGBase64 = this.getSVGBase64();
+  downloadImage(codec: 'png' | 'jpeg' | 'webp') {
     this.image = new Image();
-    this.image.src = `data:image/svg+xml;base64,${SVGBase64}`;
-    console.log(this.image.naturalWidth);
+    this.image.src = StructureSVG.singletonInstance.getSVGBlob();
     this.image.onload = () => {
       this.offscreenCanvas.width = 1000;
       this.offscreenCanvas.height = 1000;
@@ -35,22 +34,17 @@ export default class ExportSVGToolbar extends Component<Props, State> {
       this.offscreenLink.href = imagedata;
       this.offscreenLink.click();
     };
-  };
+  }
 
-  private getSVGBase64 = () => {
-    let SVGstring = new XMLSerializer().serializeToString(
-      document.querySelector('svg'),
-    );
-    return window.btoa(SVGstring);
-  };
-
-  downloadSVG = () => {
-    let SVGBase64 = this.getSVGBase64();
-    this.offscreenLink.href = `data:image/svg+xml;base64,${SVGBase64}`;
+  downloadSVG() {
+    console.log(this.offscreenLink);
+    this.offscreenLink.href = StructureSVG.singletonInstance.getSVGBlob();
     this.offscreenLink.click();
-  };
+  }
 
   render() {
+    console.log(this.props);
+
     return (
       <div class={style['export-toolbar']}>
         <button

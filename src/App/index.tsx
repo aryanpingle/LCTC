@@ -1,54 +1,51 @@
-import { Component, Fragment, h, render } from 'preact';
+import { Component, Fragment, VNode, h, render } from 'preact';
 import BinaryTreeSVG from './BinaryTreeSVG';
-import ExportSection from './Components/ExportSection';
-import { GLOBAL_BT } from './BinaryTreeSVG/globals';
+import ExportCode from './Components/ExportSection';
 import ExportSVGToolbar from './Components/ExportSVGToolbar';
 
 import './styles.css';
 import InputSection from './Components/InputSection';
 import Controls from './Components/Controls';
+import { DataStructure } from './DSA';
+import BinaryTree from './DSA/binary-tree';
 
-interface Props {}
+interface Props {
+  structureType: 'binarytree' | 'matrix' | 'linkedlist';
+}
 
 interface State {}
 
 class App extends Component<Props, State> {
-  offscreenDownloadButton: HTMLLinkElement;
+  structure: DataStructure<any>;
 
   constructor(props: Props) {
     super(props);
   }
 
-  private inputChanged = (inputText: string) => {
-    try {
-      let arr = JSON.parse(inputText);
-      if (Array.isArray(arr)) GLOBAL_BT.buildFromArray(arr);
-    } catch (e: any) {
-      return;
-    }
-  };
-
-  render(props: Props, state: State) {
+  render({ structureType }: Props, state: State) {
     console.log('App rerender');
+
+    if (structureType === 'binarytree') {
+      this.structure = new BinaryTree();
+    } else {
+      // IDK
+    }
 
     return (
       <Fragment>
         <main>
-          <BinaryTreeSVG></BinaryTreeSVG>
+          {structureType === 'binarytree' ? (
+            <BinaryTreeSVG BT={this.structure as BinaryTree}></BinaryTreeSVG>
+          ) : (
+            'IDK'
+          )}
           <ExportSVGToolbar></ExportSVGToolbar>
         </main>
         <aside>
-          <h1>Binary Trees</h1>
+          <h1>{this.structure}</h1>
           <Controls></Controls>
-          <InputSection onInputChange={this.inputChanged}></InputSection>
-          <button
-            onClick={(e) => {
-              GLOBAL_BT.randomise();
-            }}
-          >
-            Randomize
-          </button>
-          <ExportSection></ExportSection>
+          <InputSection structure={this.structure}></InputSection>
+          <ExportCode structure={this.structure}></ExportCode>
           <div className="options-container"></div>
           <footer>made by Aryan Pingle</footer>
         </aside>
@@ -57,4 +54,4 @@ class App extends Component<Props, State> {
   }
 }
 
-render(<App />, document.body);
+render(<App structureType="binarytree" />, document.body);

@@ -1,15 +1,17 @@
 import { h, Component } from 'preact';
-import { GLOBAL_BT } from '../../BinaryTreeSVG/globals';
 
 import styles from './style.css';
+import { DataStructure } from '../../DSA';
 
-interface Props {}
+interface Props {
+  structure: DataStructure<any>;
+}
 
-export default class ExportSection extends Component<Props, any> {
+export default class ExportCode extends Component<Props, any> {
   constructor(props: Props) {
     super(props);
 
-    GLOBAL_BT.subscribe(() => {
+    this.props.structure.subscribe(() => {
       this.forceUpdate();
     });
   }
@@ -49,7 +51,9 @@ export default class ExportSection extends Component<Props, any> {
             <img src="/images/C++.png" alt="" />
           </label>
         </div>
-        <pre class={styles['export-code']}>{GLOBAL_BT.toString()}</pre>
+        <pre class={styles['export-code']}>
+          {this.props.structure.toString()}
+        </pre>
       </section>
     );
   }

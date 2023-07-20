@@ -1,3 +1,5 @@
+import { DataStructure } from '.';
+
 export class Node {
   val: any = undefined;
   left: Node = null;
@@ -27,13 +29,20 @@ export function rightChild(index: number) {
   return 2 * index + 2;
 }
 
-export default class BinaryTree {
+export interface ExportOptions {
+  lang: 'python' | 'java' | 'c++';
+  asArray: boolean;
+}
+
+export default class BinaryTree extends DataStructure<ExportOptions> {
+  name: string = 'Binary Tree';
+
   height: number;
   nodes: Record<number, Node> = {};
   numberOfNodes: number;
-  subscriptions: Function[] = [];
 
   constructor(arr: Array<number | null> = [1, 2, 3]) {
+    super();
     this.buildFromArray(arr);
   }
 
@@ -47,7 +56,9 @@ export default class BinaryTree {
     this.height = getHeight(0);
   }
 
-  buildFromArray(arr: Array<any>) {
+  buildFromArray(arr: Array<string | number | null>) {
+    console.log('Building from array');
+
     // Set all nodes to null
     this.nodes = {};
 
@@ -68,7 +79,7 @@ export default class BinaryTree {
 
     this.calculateHeight();
 
-    this.onUpdate();
+    super.onUpdate();
   }
 
   deleteNode(index: number) {
@@ -92,7 +103,7 @@ export default class BinaryTree {
 
     this.calculateHeight();
 
-    this.onUpdate();
+    super.onUpdate();
   }
 
   appendNode(index: number, direction: 'left' | 'right', val: any) {
@@ -109,7 +120,7 @@ export default class BinaryTree {
 
     this.calculateHeight();
 
-    this.onUpdate();
+    super.onUpdate();
   }
 
   toString(): string {
@@ -133,11 +144,7 @@ export default class BinaryTree {
     this.buildFromArray(arr);
   }
 
-  subscribe(f: Function) {
-    this.subscriptions.push(f);
-  }
-
-  onUpdate() {
-    this.subscriptions.forEach((f) => f());
+  exportCode({ lang, asArray }: ExportOptions): string {
+    return `Export: { ${lang}, ${asArray} }`;
   }
 }
