@@ -1,6 +1,6 @@
 import { Component, Fragment, VNode, h, render } from 'preact';
 import BinaryTreeSVG from './BinaryTreeSVG';
-import ExportCode from './Components/ExportSection';
+import ExportCode from './Components/ExportCode';
 import ExportSVGToolbar from './Components/ExportSVGToolbar';
 
 import './styles.css';
@@ -42,7 +42,7 @@ class App extends Component<Props, State> {
           <ExportSVGToolbar></ExportSVGToolbar>
         </main>
         <aside>
-          <h1>{this.structure}</h1>
+          <h1>{this.structure.getName()}</h1>
           <Controls></Controls>
           <InputSection structure={this.structure}></InputSection>
           <ExportCode structure={this.structure}></ExportCode>

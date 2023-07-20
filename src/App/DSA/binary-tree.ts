@@ -1,4 +1,4 @@
-import { DataStructure } from '.';
+import { DataStructure, DataStructureID } from '.';
 
 export class Node {
   val: any = undefined;
@@ -29,12 +29,13 @@ export function rightChild(index: number) {
   return 2 * index + 2;
 }
 
-export interface ExportOptions {
-  lang: 'python' | 'java' | 'c++';
-  asArray: boolean;
-}
+export const ExportOptions = {
+  lang: ['Python', 'Java', 'C++'] as const,
+  asArray: ['Array of values', 'Nodes'] as const,
+};
 
-export default class BinaryTree extends DataStructure<ExportOptions> {
+export default class BinaryTree extends DataStructure<typeof ExportOptions> {
+  id = DataStructure[DataStructureID['Binary Tree']];
   name: string = 'Binary Tree';
 
   height: number;
@@ -44,6 +45,10 @@ export default class BinaryTree extends DataStructure<ExportOptions> {
   constructor(arr: Array<number | null> = [1, 2, 3]) {
     super();
     this.buildFromArray(arr);
+  }
+
+  getExportOptions(): typeof ExportOptions {
+    return ExportOptions;
   }
 
   private calculateHeight() {
@@ -144,7 +149,26 @@ export default class BinaryTree extends DataStructure<ExportOptions> {
     this.buildFromArray(arr);
   }
 
-  exportCode({ lang, asArray }: ExportOptions): string {
+  exportCode(
+    exportOptions?: Record<keyof typeof ExportOptions, number>,
+  ): string {
+    if (!exportOptions)
+      return this.exportCode({
+        lang: 0,
+        asArray: 0,
+      });
+
+    const { lang, asArray } = exportOptions;
+
+    if (asArray == 0) {
+      // Return as an array
+      return this.exportAsArray(lang);
+    }
     return `Export: { ${lang}, ${asArray} }`;
+  }
+
+  private exportAsArray(lang: number) {
+    console.log('Exported as array');
+    return `${Object.keys(this.nodes).length}`;
   }
 }
