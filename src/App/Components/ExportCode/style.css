@@ -52,11 +52,12 @@
 
 .export-code {
     width: 100%;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    max-height: 10.5em;
+    overflow: auto;
+    word-wrap: normal;
+    white-space: break-spaces;
     
-    background-color: lightgray;
-    padding: 8px;
+    background-color: rgba(0, 0, 0, 0.1);
+    padding: 0.25em 0.5em;
     border-radius: 5px;
 }

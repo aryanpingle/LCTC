@@ -90,7 +90,7 @@ export default class BinaryTreeSVG extends StructureSVG<Props, State> {
       this.props.BT.appendNode(
         nodeIndex,
         event.code === 'ArrowLeft' ? 'left' : 'right',
-        '*',
+        0,
       );
     }
     if (event.code === 'ArrowUp') {

@@ -164,7 +164,7 @@ export default class BinaryTree extends DataStructure<typeof ExportOptions> {
       // Return as an array
       return this.exportAsArray(language);
     }
-    return `Export: { ${language}, ${asArray} }`;
+    return this.exportAsNodes(language);
   }
 
   private exportAsArray(lang: number) {
@@ -172,11 +172,62 @@ export default class BinaryTree extends DataStructure<typeof ExportOptions> {
     for (const [key, node] of Object.entries(this.nodes)) {
       arr[key] = node.val;
     }
-    let str = JSON.stringify(arr);
-    if (lang !== 0) {
-      // Java or C++, replace [] with {}
-      str = str.replace('[', '{').replace(']', '}');
+    let str = arr.map((val) => (val == null ? 'null' : val)).join(', ');
+
+    const BRACKET: [string, string] = lang == 0 ? ['[', ']'] : ['{', '}'];
+
+    return `${BRACKET[0]}${str}${BRACKET[1]}`;
+  }
+
+  private exportAsNodes(lang: number) {
+    const CLASSNAME = 'TreeNode';
+    const DECLARATION =
+      lang == 0
+        ? ''
+        : lang == 1
+        ? `${CLASSNAME}[] `
+        : `vector<${CLASSNAME} *> `;
+    const VARIABLENAME = 'nodeArray';
+    const SEMICOLON = lang == 0 ? '' : ';';
+    const NULL = lang == 0 ? 'None' : lang == 1 ? 'null' : 'NULL';
+    const NEW = lang == 0 ? '' : 'new ';
+    const BRACKET: [string, string] = lang == 0 ? ['[', ']'] : ['{', '}'];
+    const FIELD_OPERATOR = lang == 2 ? '->' : '.';
+
+    // Get internal array representation of values
+    let arr = new Array(2 ** this.height - 1).fill(null);
+    for (const [key, node] of Object.entries(this.nodes)) {
+      arr[key] = node.val;
     }
-    return str;
+
+    const INITIALIZATION = `${DECLARATION}${VARIABLENAME} = ${BRACKET[0]}${arr
+      .map((val) => {
+        if (val == null) return `${NULL}`;
+        return `${NEW}${CLASSNAME}(${val})`;
+      })
+      .join(', ')}${BRACKET[1]}${SEMICOLON}`;
+
+    const SETTING = [];
+    for (const index in this.nodes) {
+      const node = this.nodes[index];
+      if (!node.left && !node.right) continue;
+
+      let s = [];
+      if (node.left) {
+        s.push('left');
+      }
+      if (node.right) {
+        s.push('right');
+      }
+      s = s.map(
+        (dir) =>
+          `${VARIABLENAME}[${index}]${FIELD_OPERATOR}${dir} = ${VARIABLENAME}[${leftChild(
+            parseInt(index),
+          )}]${SEMICOLON}`,
+      );
+      SETTING.push(s.join('\n'));
+    }
+
+    return [INITIALIZATION, ...SETTING].join('\n');
   }
 }

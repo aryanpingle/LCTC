@@ -77,7 +77,7 @@ export default class ExportCode extends Component<Props, any> {
   }
 
   updateCode() {
-    document.querySelector('#export-code').innerHTML =
+    document.querySelector('#export-code').textContent =
       this.props.structure.exportCode(this.getFormData());
   }
 
