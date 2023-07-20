@@ -36,7 +36,15 @@ export default class ExportCode extends Component<Props, any> {
         let id = `${key}_${counter}`;
         optionsRow.push(
           <Fragment>
-            <input checked type="radio" id={id} name={key} value={counter} />
+            <input
+              type="radio"
+              id={id}
+              name={key}
+              value={counter}
+              {...(counter === 0 && {
+                checked: true,
+              })}
+            />
             <label tabIndex={0} for={id} class={styles['export-option-label']}>
               {val}
             </label>
