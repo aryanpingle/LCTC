@@ -128,6 +128,14 @@ export default class BinaryTree extends DataStructure<typeof ExportOptions> {
     super.onUpdate();
   }
 
+  setNodeValue(index: number, val: number) {
+    if (!(index in this.nodes)) return;
+
+    this.nodes[index].val = val;
+
+    super.onUpdate();
+  }
+
   toString(): string {
     // @ts-ignore
     return Object.entries(this.nodes)

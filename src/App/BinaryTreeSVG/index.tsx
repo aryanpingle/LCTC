@@ -119,6 +119,9 @@ export default class BinaryTreeSVG extends StructureSVG<Props, State> {
       target.setAttribute('colorIndex', '' + colorIndex);
       target.style.fill = colors[colorIndex];
     }
+    if (event.code.startsWith('Digit')) {
+      this.props.BT.setNodeValue(nodeIndex, parseInt(event.code.charAt(5)));
+    }
   }
 
   buildSVG(): void {
