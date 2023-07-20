@@ -29,7 +29,7 @@ export default class ExportCode extends Component<Props, any> {
     const exportOption: AnyExportOptions =
       this.props.structure.getExportOptions();
     for (const [key, values] of Object.entries(exportOption)) {
-      const optionsRow: VNode[] = [];
+      const optionsRow: VNode[] = [<span>{key}: </span>];
 
       for (let counter = 0; counter < values.length; ++counter) {
         let val = values[counter];

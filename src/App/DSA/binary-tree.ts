@@ -30,7 +30,7 @@ export function rightChild(index: number) {
 }
 
 export const ExportOptions = {
-  lang: ['Python', 'Java', 'C++'] as const,
+  language: ['Python', 'Java', 'C++'] as const,
   asArray: ['Array of values', 'Nodes'] as const,
 };
 
@@ -154,21 +154,29 @@ export default class BinaryTree extends DataStructure<typeof ExportOptions> {
   ): string {
     if (!exportOptions)
       return this.exportCode({
-        lang: 0,
+        language: 0,
         asArray: 0,
       });
 
-    const { lang, asArray } = exportOptions;
+    const { language, asArray } = exportOptions;
 
     if (asArray == 0) {
       // Return as an array
-      return this.exportAsArray(lang);
+      return this.exportAsArray(language);
     }
-    return `Export: { ${lang}, ${asArray} }`;
+    return `Export: { ${language}, ${asArray} }`;
   }
 
   private exportAsArray(lang: number) {
-    console.log('Exported as array');
-    return `${Object.keys(this.nodes).length}`;
+    let arr = new Array(2 ** this.height - 1).fill(null);
+    for (const [key, node] of Object.entries(this.nodes)) {
+      arr[key] = node.val;
+    }
+    let str = JSON.stringify(arr);
+    if (lang !== 0) {
+      // Java or C++, replace [] with {}
+      str = str.replace('[', '{').replace(']', '}');
+    }
+    return str;
   }
 }
