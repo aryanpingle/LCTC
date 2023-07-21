@@ -71,7 +71,7 @@ export default class ExportSVGToolbar extends Component<Props, State> {
         {/* Offscreen elements */}
         <a
           href=""
-          download="true"
+          download="data-structure"
           ref={linkRef(this, 'offscreenLink')}
           style={{ display: 'none' }}
         >
