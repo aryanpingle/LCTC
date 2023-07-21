@@ -202,43 +202,60 @@ export default class BinaryTree extends DataStructure<typeof ExportOptions> {
     const NEW = lang == 0 ? '' : 'new ';
     const BRACKET: [string, string] = lang == 0 ? ['[', ']'] : ['{', '}'];
     const FIELD_OPERATOR = lang == 2 ? '->' : '.';
+    const FUNCTION_KEYWORD =
+      lang == 0 ? 'def' : lang == 1 ? CLASSNAME : `${CLASSNAME} *`;
 
-    // Get internal array representation of values
+    // get internal array representation of values
     let arr = new Array(2 ** this.height - 1).fill(null);
     for (const [key, node] of Object.entries(this.nodes)) {
       arr[key] = node.val;
     }
 
+    const LINES: string[] = [];
+
+    // wrapping function
+    LINES.push(`${FUNCTION_KEYWORD} testcase()${lang == 0 ? ':' : ' {'}`);
+
+    // initializing the array where nodes are stored
     const INITIALIZATION = `${DECLARATION}${VARIABLENAME} = ${BRACKET[0]}${arr
       .map((val) => {
         if (val == null) return `${NULL}`;
         return `${NEW}${CLASSNAME}(${val})`;
       })
       .join(', ')}${BRACKET[1]}${SEMICOLON}`;
+    LINES.push('    ' + INITIALIZATION);
 
-    const SETTING = [];
+    // setting 'left' and 'right' fields
     for (const index in this.nodes) {
       const node = this.nodes[index];
       if (!node.left && !node.right) continue;
 
-      let s = [];
       if (node.left) {
-        s.push(
-          `${VARIABLENAME}[${index}]${FIELD_OPERATOR}left = ${VARIABLENAME}[${leftChild(
-            parseInt(index),
-          )}]${SEMICOLON}`,
+        LINES.push(
+          '    ' +
+            `${VARIABLENAME}[${index}]${FIELD_OPERATOR}left = ${VARIABLENAME}[${leftChild(
+              parseInt(index),
+            )}]${SEMICOLON}`,
         );
       }
       if (node.right) {
-        s.push(
-          `${VARIABLENAME}[${index}]${FIELD_OPERATOR}right = ${VARIABLENAME}[${rightChild(
-            parseInt(index),
-          )}]${SEMICOLON}`,
+        LINES.push(
+          '    ' +
+            `${VARIABLENAME}[${index}]${FIELD_OPERATOR}right = ${VARIABLENAME}[${rightChild(
+              parseInt(index),
+            )}]${SEMICOLON}`,
         );
       }
-      SETTING.push(s.join('\n'));
     }
 
-    return [INITIALIZATION, ...SETTING].join('\n');
+    // return statement
+    LINES.push('    ' + `return ${VARIABLENAME}[0]${SEMICOLON}`);
+
+    // end function
+    if (lang != 0) {
+      LINES.push('}');
+    }
+
+    return LINES.join('\n');
   }
 }
