@@ -7,6 +7,11 @@ interface Props {
   structure: DataStructure<any>;
 }
 
+enum CopyText {
+  default = 'copy',
+  copied = 'copied',
+}
+
 export default class ExportCode extends Component<Props, any> {
   constructor(props: Props) {
     super(props);
@@ -79,7 +84,18 @@ export default class ExportCode extends Component<Props, any> {
   updateCode() {
     document.querySelector('#export-code').textContent =
       this.props.structure.exportCode(this.getFormData());
+    document.querySelector(`.${styles['copy-button']}`).textContent =
+      CopyText.default;
   }
+
+  copyCode = () => {
+    if (!navigator || !navigator.clipboard) return;
+    navigator.clipboard.writeText(
+      this.props.structure.exportCode(this.getFormData()),
+    );
+    document.querySelector(`.${styles['copy-button']}`).textContent =
+      CopyText.copied;
+  };
 
   render() {
     return (
@@ -97,7 +113,17 @@ export default class ExportCode extends Component<Props, any> {
         >
           {...this.renderFromExportOption()}
         </form>
-        <pre id="export-code" class={styles['export-code']}></pre>
+        <div class={styles['export-code-container']}>
+          <button
+            class={styles['copy-button']}
+            onClick={() => {
+              this.copyCode();
+            }}
+          >
+            {CopyText.default}
+          </button>
+          <pre id="export-code" class={styles['export-code']}></pre>
+        </div>
       </section>
     );
   }
