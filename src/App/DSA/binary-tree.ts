@@ -42,7 +42,7 @@ export default class BinaryTree extends DataStructure<typeof ExportOptions> {
   nodes: Record<number, Node> = {};
   numberOfNodes: number;
 
-  constructor(arr: Array<number | null> = [1, 2, 3]) {
+  constructor(arr: Array<number | null> = [1, 2, 3, 4, 5, 6, 7]) {
     super();
     this.buildFromArray(arr);
   }
