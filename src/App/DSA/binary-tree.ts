@@ -188,6 +188,7 @@ export default class BinaryTree extends DataStructure<typeof ExportOptions> {
   }
 
   private exportAsNodes(lang: number) {
+    // TODO: Switch to variables instead of array for sparse trees
     const CLASSNAME = 'TreeNode';
     const DECLARATION =
       lang == 0
@@ -222,17 +223,19 @@ export default class BinaryTree extends DataStructure<typeof ExportOptions> {
 
       let s = [];
       if (node.left) {
-        s.push('left');
-      }
-      if (node.right) {
-        s.push('right');
-      }
-      s = s.map(
-        (dir) =>
-          `${VARIABLENAME}[${index}]${FIELD_OPERATOR}${dir} = ${VARIABLENAME}[${leftChild(
+        s.push(
+          `${VARIABLENAME}[${index}]${FIELD_OPERATOR}left = ${VARIABLENAME}[${leftChild(
             parseInt(index),
           )}]${SEMICOLON}`,
-      );
+        );
+      }
+      if (node.right) {
+        s.push(
+          `${VARIABLENAME}[${index}]${FIELD_OPERATOR}right = ${VARIABLENAME}[${rightChild(
+            parseInt(index),
+          )}]${SEMICOLON}`,
+        );
+      }
       SETTING.push(s.join('\n'));
     }
 

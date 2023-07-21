@@ -13,7 +13,18 @@
 }
 
 .key {
+    display: inline;
     background-color: lightgray;
     padding: 2px 8px;
     border-radius: 5px;
+}
+
+.key > svg {
+    display: inline-block;
+    font-size: 1em;
+    width: 1em;
+    height: 1em;
+    margin: none;
+
+    vertical-align: middle;
 }
