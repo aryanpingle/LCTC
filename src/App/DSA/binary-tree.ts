@@ -30,7 +30,7 @@ export function rightChild(index: number) {
 }
 
 export const ExportOptions = {
-  language: ['Python', 'Java', 'C++'] as const,
+  language: ['Python', 'Java', 'C++', 'Javascript'] as const,
   asArray: ['Array of values', 'Nodes'] as const,
 };
 
@@ -187,23 +187,36 @@ export default class BinaryTree extends DataStructure<typeof ExportOptions> {
     return `${BRACKET[0]}${str}${BRACKET[1]}`;
   }
 
-  private exportAsNodes(lang: number) {
+  private exportAsNodes(languageIndex: number) {
     // TODO: Switch to variables instead of array for sparse trees
+    const lang = ExportOptions['language'][languageIndex];
     const CLASSNAME = 'TreeNode';
     const DECLARATION =
-      lang == 0
-        ? ''
-        : lang == 1
-        ? `${CLASSNAME}[] `
-        : `vector<${CLASSNAME} *> `;
+      (lang == 'Python' && '') ||
+      (lang == 'Java' && `${CLASSNAME}[] `) ||
+      (lang == 'C++' && `vector<${CLASSNAME} *> `) ||
+      (lang == 'Javascript' && 'const ');
+
+    // (lang == 'Python' && '') ||
+    // (lang == 'Java' && '') ||
+    // (lang == 'C++' && '') ||
+    // (lang == 'Javascript' && '');
     const VARIABLENAME = 'nodeArray';
-    const SEMICOLON = lang == 0 ? '' : ';';
-    const NULL = lang == 0 ? 'None' : lang == 1 ? 'null' : 'NULL';
-    const NEW = lang == 0 ? '' : 'new ';
-    const BRACKET: [string, string] = lang == 0 ? ['[', ']'] : ['{', '}'];
-    const FIELD_OPERATOR = lang == 2 ? '->' : '.';
+    const SEMICOLON = (lang == 'Python' && '') || ';';
+    const NULL =
+      (lang == 'Python' && 'None') ||
+      (lang == 'Java' && 'null') ||
+      (lang == 'C++' && 'NULL') ||
+      (lang == 'Javascript' && 'null');
+    const NEW = lang == 'Python' ? '' : 'new ';
+    const BRACKET: [string, string] = ((lang == 'Python' ||
+      lang == 'Javascript') && ['[', ']']) || ['{', '}'];
+    const FIELD_OPERATOR = (lang == 'C++' && '->') || '.';
     const FUNCTION_KEYWORD =
-      lang == 0 ? 'def' : lang == 1 ? CLASSNAME : `${CLASSNAME} *`;
+      (lang == 'Python' && 'def') ||
+      (lang == 'Java' && CLASSNAME) ||
+      (lang == 'C++' && `${CLASSNAME} *`) ||
+      (lang == 'Javascript' && 'function');
 
     // get internal array representation of values
     let arr = new Array(2 ** this.height - 1).fill(null);
@@ -214,7 +227,9 @@ export default class BinaryTree extends DataStructure<typeof ExportOptions> {
     const LINES: string[] = [];
 
     // wrapping function
-    LINES.push(`${FUNCTION_KEYWORD} testcase()${lang == 0 ? ':' : ' {'}`);
+    LINES.push(
+      `${FUNCTION_KEYWORD} testcase()${(lang == 'Python' && ':') || ' {'}`,
+    );
 
     // initializing the array where nodes are stored
     const INITIALIZATION = `${DECLARATION}${VARIABLENAME} = ${BRACKET[0]}${arr
@@ -252,7 +267,7 @@ export default class BinaryTree extends DataStructure<typeof ExportOptions> {
     LINES.push('    ' + `return ${VARIABLENAME}[0]${SEMICOLON}`);
 
     // end function
-    if (lang != 0) {
+    if (lang != 'Python') {
       LINES.push('}');
     }
 
