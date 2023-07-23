@@ -50,9 +50,17 @@ export default class ExportCode extends Component<Props, any> {
                 checked: true,
               })}
             />
-            <label tabIndex={0} for={id} class={styles['export-option-label']}>
+            <button
+              class={styles['export-option-button']}
+              onClick={(event) => {
+                event.preventDefault();
+                event.stopImmediatePropagation();
+                // @ts-ignore
+                event.target.previousElementSibling.click();
+              }}
+            >
               {val}
-            </label>
+            </button>
           </Fragment>,
         );
       }

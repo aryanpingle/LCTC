@@ -34,7 +34,7 @@
     display: none;
 }
 
-.export-option-label {
+.export-option-button {
     font-size: 1em;
     padding: 0.25em 0.5em;
 
@@ -51,12 +51,16 @@
     background-color: rgba(0, 0, 0, 0.1);
 }
 
-.export-option-label:focus {
+.export-option-button:hover {
+    background-color: rgba(0, 0, 0, 0.2);
+}
+
+.export-option-button:focus {
     outline: rgba(0, 0, 0, 0.5) solid 2px;
 }
 
-.export-options input:checked + label {
-    background-color: aquamarine;
+.export-options input:checked + button {
+    background-color: aquamarine !important;
 }
 
 .export-code-container {
