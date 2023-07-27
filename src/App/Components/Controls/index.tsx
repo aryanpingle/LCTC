@@ -37,8 +37,7 @@ export default class Controls extends Component<Props, State> {
           <span class={styles.key}>Bksp &#x232b;</span> = Delete
         </div>
         <div class={styles['controls-item']}>
-          <span class={styles.key}>1</span> - <span class={styles.key}>9</span>{' '}
-          = Set Number
+          <span class={styles.key}>Enter</span> = Edit Value
         </div>
       </div>
     );

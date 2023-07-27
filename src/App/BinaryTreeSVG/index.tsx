@@ -121,6 +121,17 @@ export default class BinaryTreeSVG extends StructureSVG<Props, State> {
     if (event.code === 'Space') {
       this.nodeInstances[nodeIndex].rotateColor();
     }
+    if (event.code === 'Enter') {
+      const rawInput = prompt(
+        `Enter node value (currently ${this.props.BT.nodes[nodeIndex].val})`,
+        '-1',
+      );
+      if (!rawInput || rawInput.trim() == '') return;
+      try {
+        const numInput = parseFloat(rawInput);
+        this.props.BT.setNodeValue(nodeIndex, numInput);
+      } catch (e) {}
+    }
     if (event.code.startsWith('Digit')) {
       this.props.BT.setNodeValue(nodeIndex, parseInt(event.code.charAt(5)));
     }
