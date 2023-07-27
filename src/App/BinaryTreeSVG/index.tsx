@@ -1,10 +1,16 @@
 import { h, VNode } from 'preact';
-import { Box, getLetterWidth, linkRef, removeUnit } from '../utils';
+import {
+  Box,
+  getLetterWidth,
+  linkRef,
+  appendRefToArray,
+  removeUnit,
+} from '../utils';
 import BinaryTree, { leftChild, parent, rightChild } from '../DSA/binary-tree';
 
 import style from './styles.css';
-import getBTSVGNode from './BTSVGNode';
 import StructureSVG from '../StructureSVG';
+import BTSVGNode from './BTSVGNode';
 
 interface Props {
   BT: BinaryTree;
@@ -14,7 +20,7 @@ interface State {
   WIDTH: number;
   HEIGHT: number;
   edges: VNode<SVGLineElement>[];
-  nodes: VNode<SVGGElement>[];
+  nodes: VNode<BTSVGNode>[];
 }
 
 const styles = {
@@ -32,6 +38,7 @@ export default class BinaryTreeSVG extends StructureSVG<Props, State> {
   svgElement: SVGElement;
   canvas: HTMLCanvasElement;
   postRenderCallback: Function;
+  nodeInstances: BTSVGNode[] = [];
 
   constructor(props: Props) {
     super(props);
@@ -45,7 +52,7 @@ export default class BinaryTreeSVG extends StructureSVG<Props, State> {
   }
 
   componentDidMount(): void {
-    console.log('this', this);
+    // console.log('this', this);
     this.props.BT.subscribe(this.buildSVG.bind(this));
     this.buildSVG();
   }
@@ -112,12 +119,7 @@ export default class BinaryTreeSVG extends StructureSVG<Props, State> {
       this.props.BT.deleteNode(nodeIndex);
     }
     if (event.code === 'Space') {
-      const colors = ['springgreen', 'deeppink'];
-      const target = event.target as SVGCircleElement;
-      let colorIndex = parseInt(target.getAttribute('colorIndex') ?? '0');
-      colorIndex = (colorIndex + 1) % colors.length;
-      target.setAttribute('colorIndex', '' + colorIndex);
-      target.style.fill = colors[colorIndex];
+      this.nodeInstances[nodeIndex].rotateColor();
     }
     if (event.code.startsWith('Digit')) {
       this.props.BT.setNodeValue(nodeIndex, parseInt(event.code.charAt(5)));
@@ -125,8 +127,9 @@ export default class BinaryTreeSVG extends StructureSVG<Props, State> {
   }
 
   buildSVG(): void {
+    this.nodeInstances = [];
     const edges: VNode<SVGLineElement>[] = [];
-    const nodes: VNode<SVGCircleElement>[] = [];
+    const nodes: VNode<BTSVGNode>[] = [];
 
     const BLOCK = 50;
 
@@ -207,20 +210,19 @@ export default class BinaryTreeSVG extends StructureSVG<Props, State> {
 
       let radius = BLOCK >> 1;
       nodes.push(
-        getBTSVGNode(
-          {
-            center: [cx, cy],
-            radius: radius,
-            real: !!node,
-            index: index,
-            text: node && node.val,
-            onKeyDown: (e: KeyboardEvent) => {
-              this.onNodeKeyDown(e);
-            },
-          },
-          LETTER_WIDTH,
-          FONT_HEIGHT,
-        ),
+        <BTSVGNode
+          center={[cx, cy]}
+          radius={radius}
+          real={!!node}
+          index={index}
+          text={node && node.val}
+          onKeyDown={(e: KeyboardEvent) => {
+            this.onNodeKeyDown(e);
+          }}
+          LETTER_WIDTH={LETTER_WIDTH}
+          FONT_HEIGHT={FONT_HEIGHT}
+          ref={appendRefToArray(this.nodeInstances)}
+        ></BTSVGNode>,
       );
     }
 

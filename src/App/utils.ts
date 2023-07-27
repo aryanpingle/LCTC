@@ -15,6 +15,12 @@ export const linkRef = (obj: any, name: string) => {
   return ref;
 };
 
+export const appendRefToArray = (array: Array<any>) => {
+  return (element: any) => {
+    array.push(element);
+  };
+};
+
 export function removeUnit(s: string): number {
   if (s.endsWith('px') || s.endsWith('em'))
     return parseFloat(s.substring(0, s.length - 2));

@@ -34,16 +34,16 @@ class App extends Component<Props, State> {
     return (
       <Fragment>
         <main>
+          <ExportSVGToolbar></ExportSVGToolbar>
           {structureType === 'binarytree' ? (
             <BinaryTreeSVG BT={this.structure as BinaryTree}></BinaryTreeSVG>
           ) : (
             'IDK'
           )}
-          <ExportSVGToolbar></ExportSVGToolbar>
+          <Controls></Controls>
         </main>
         <aside>
           <h1>{this.structure.getName()}</h1>
-          <Controls></Controls>
           <InputSection structure={this.structure}></InputSection>
           <ExportCode structure={this.structure}></ExportCode>
           <div className="options-container"></div>
