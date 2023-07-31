@@ -2,9 +2,10 @@ import { h, Component } from 'preact';
 import { linkRef } from '../../utils';
 
 import style from './styles.css';
-import StructureSVG from '../../StructureSVG';
 
-interface Props {}
+interface Props {
+  svgElement: SVGElement;
+}
 
 interface State {}
 
@@ -17,9 +18,20 @@ export default class ExportSVGToolbar extends Component<Props, State> {
     super(props);
   }
 
+  getSVGBase64(): string {
+    let SVGstring = new XMLSerializer().serializeToString(
+      this.props.svgElement,
+    );
+    return window.btoa(SVGstring);
+  }
+
+  getSVGBlob(): string {
+    return `data:image/svg+xml;base64,${this.getSVGBase64()}`;
+  }
+
   downloadImage(codec: 'png' | 'jpeg' | 'webp') {
     this.image = new Image();
-    this.image.src = StructureSVG.singletonInstance.getSVGBlob();
+    this.image.src = this.getSVGBlob();
     this.image.onload = () => {
       this.offscreenCanvas.width = 1000;
       this.offscreenCanvas.height = 1000;
@@ -37,14 +49,11 @@ export default class ExportSVGToolbar extends Component<Props, State> {
   }
 
   downloadSVG() {
-    console.log(this.offscreenLink);
-    this.offscreenLink.href = StructureSVG.singletonInstance.getSVGBlob();
+    this.offscreenLink.href = this.getSVGBlob();
     this.offscreenLink.click();
   }
 
   render() {
-    console.log(this.props);
-
     return (
       <div class={style['export-toolbar']}>
         <button

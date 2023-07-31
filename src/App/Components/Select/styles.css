@@ -1,0 +1,36 @@
+.select-container {
+    display: inline;
+    position: relative;
+    width: min-content;
+    margin-right: 0.5em;
+}
+
+.select-container::after {
+    content: '';
+    position: absolute;
+    font-size: inherit;
+    top: 50%;
+    right: 0.5em;
+    transform: translateY(-50%);
+    width: 0.5em;
+    height: 0.5em;
+    clip-path: polygon(
+        0 25%,
+        100% 25%,
+        50% 75%
+    );
+    background-color: currentColor;
+}
+
+
+.select {
+    appearance: none;
+
+    font-family: inherit;
+    font-size: inherit;
+    padding: 0.25em 0.5em;
+    padding-right: 1.5em;
+    width: min-content;
+
+    border-radius: 0.25em;
+}

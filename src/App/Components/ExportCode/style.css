@@ -12,11 +12,6 @@
 
 .export-options {
     width: 100%;
-
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-    gap: 0.5rem;
 }
 
 .export-options-category {

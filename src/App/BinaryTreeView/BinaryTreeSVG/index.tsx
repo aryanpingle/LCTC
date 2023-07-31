@@ -1,16 +1,21 @@
-import { h, VNode } from 'preact';
+import { Component, Fragment, h, VNode } from 'preact';
 import {
   Box,
   getLetterWidth,
   linkRef,
   appendRefToArray,
   removeUnit,
-} from '../utils';
-import BinaryTree, { leftChild, parent, rightChild } from '../DSA/binary-tree';
+} from '../../utils';
+import BinaryTree, {
+  leftChild,
+  parent,
+  rightChild,
+} from '../../DSA/binary-tree';
 
 import style from './styles.css';
-import StructureSVG from '../StructureSVG';
 import BTSVGNode from './BTSVGNode';
+import ExportSVGToolbar from '../../Components/ExportSVGToolbar';
+import Controls, { KeySpan } from '../../Components/Controls';
 
 interface Props {
   BT: BinaryTree;
@@ -34,7 +39,7 @@ const styles = {
   },
 };
 
-export default class BinaryTreeSVG extends StructureSVG<Props, State> {
+export default class BinaryTreeSVG extends Component<Props, State> {
   svgElement: SVGElement;
   canvas: HTMLCanvasElement;
   postRenderCallback: Function;
@@ -248,29 +253,62 @@ export default class BinaryTreeSVG extends StructureSVG<Props, State> {
   render({}: Props, { WIDTH, HEIGHT, edges, nodes }: State) {
     // console.log('BTSVG render');
     const padding = 10;
+    // prettier-ignore
+    const LMB = <svg fill="#000000" version="1.1" width="800px" height="800px" viewBox="0 0 356.572 356.572">
+      <path d="M181.563,0C120.762,0,59.215,30.525,59.215,88.873V237.5c0,65.658,53.412,119.071,119.071,119.071 c65.658,0,119.07-53.413,119.07-119.071V88.873C297.356,27.809,237.336,0,181.563,0z M274.945,237.5 c0,53.303-43.362,96.657-96.659,96.657c-53.299,0-96.657-43.354-96.657-96.657v-69.513c20.014,6.055,57.685,15.215,102.221,15.215 c28.515,0,59.831-3.809,91.095-14.567V237.5z M274.945,144.794c-81.683,31.233-168.353,7.716-193.316-0.364V88.873 c0-43.168,51.489-66.46,99.934-66.46c46.481,0,93.382,20.547,93.382,66.46V144.794z M190.893,48.389v81.248 c0,6.187-5.023,11.208-11.206,11.208c-6.185,0-11.207-5.021-11.207-11.208V48.389c0-6.186,5.021-11.207,11.207-11.207 C185.869,37.182,190.893,42.203,190.893,48.389z M154.938,40.068V143.73c-15.879,2.802-62.566-10.271-62.566-10.271 C80.233,41.004,154.938,40.068,154.938,40.068z"/>
+    </svg>;
 
     return (
-      <div
-        className={`${style['svg-container']}`}
-        ref={linkRef(this, 'svgContainer')}
-      >
-        <svg
-          ref={linkRef(this, 'svgElement')}
-          viewBox={`${-padding} ${-padding} ${WIDTH + 2 * padding} ${
-            HEIGHT + 2 * padding
-          }`}
-          style={{
-            fontFamily: 'Courier New',
-          }}
+      <Fragment>
+        <div
+          className={`${style['svg-container']}`}
+          ref={linkRef(this, 'svgContainer')}
         >
-          <g id="group--lines">{...edges || []}</g>
-          <g id="group--nodes">{...nodes || []}</g>
-        </svg>
-        <canvas
-          style={{ display: 'none' }}
-          ref={linkRef(this, 'canvas')}
-        ></canvas>
-      </div>
+          <svg
+            ref={linkRef(this, 'svgElement')}
+            viewBox={`${-padding} ${-padding} ${WIDTH + 2 * padding} ${
+              HEIGHT + 2 * padding
+            }`}
+            style={{
+              fontFamily: 'Courier New',
+            }}
+          >
+            <g id="group--lines">{...edges || []}</g>
+            <g id="group--nodes">{...nodes || []}</g>
+          </svg>
+          <canvas
+            style={{ display: 'none' }}
+            ref={linkRef(this, 'canvas')}
+          ></canvas>
+        </div>
+        <Controls>
+          <Fragment>
+            <KeySpan>{LMB}</KeySpan> = Select Node
+          </Fragment>
+          <Fragment>
+            <KeySpan>&larr;</KeySpan> = Left Child
+          </Fragment>
+          <Fragment>
+            <KeySpan>&rarr;</KeySpan> = Right Child
+          </Fragment>
+          <Fragment>
+            <KeySpan>&uarr;</KeySpan> = Parent Node
+          </Fragment>
+          <Fragment>
+            <KeySpan>Space</KeySpan> = Highlight
+          </Fragment>
+          <Fragment>
+            <KeySpan>Tab &#8644;</KeySpan> = Level Order Traverse
+          </Fragment>
+          <Fragment>
+            <KeySpan>Bksp &#x232b;</KeySpan> = Delete
+          </Fragment>
+          <Fragment>
+            <KeySpan>Enter</KeySpan> = Edit Value
+          </Fragment>
+        </Controls>
+        <ExportSVGToolbar svgElement={this.svgElement}></ExportSVGToolbar>
+      </Fragment>
     );
   }
 }
