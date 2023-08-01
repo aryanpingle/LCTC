@@ -1,4 +1,4 @@
-import { DataStructure, DataStructureID } from '.';
+import { DataStructure } from '.';
 
 export class Node {
   val: any = undefined;
@@ -35,7 +35,6 @@ export interface ExportOptionsType {
 }
 
 export default class BinaryTree extends DataStructure {
-  id = DataStructure[DataStructureID['Binary Tree']];
   name: string = 'Binary Tree';
 
   height: number;
@@ -44,7 +43,7 @@ export default class BinaryTree extends DataStructure {
 
   constructor(arr: Array<number | null> = [1, 2, 3, 4, 5, 6, 7]) {
     super();
-    this.buildFromArray(arr);
+    this.buildFromSerialArray(arr);
   }
 
   private calculateHeight() {
@@ -57,7 +56,7 @@ export default class BinaryTree extends DataStructure {
     this.height = getHeight(0);
   }
 
-  buildFromArray(arr: Array<string | number | null>) {
+  buildFromSerialArray(arr: Array<string | number | null>) {
     console.log('Building from array');
 
     // Set all nodes to null
@@ -77,6 +76,61 @@ export default class BinaryTree extends DataStructure {
       return node;
     };
     createNode(0);
+
+    this.calculateHeight();
+
+    super.onUpdate();
+  }
+
+  /**
+   * Builds from an array using the LeetCode representation
+   * Children of blank nodes are not included in the array
+   * @example [1,null,2,null,3] creates a right-aligned tree 1 > 2 > 3
+   */
+  buildFromLeetCodeArray(arr: Array<string | number | null>) {
+    console.log('Building from LeetCode array');
+
+    // Reset nodes + base case
+    this.nodes = { 0: new Node(arr[0]) };
+
+    // Create all nodes
+    let arrIndex = 1;
+    let nodeIndex = 1;
+    let lastValidNodeIndex = 0;
+    while (arrIndex < arr.length) {
+      const parentIdx = parent(nodeIndex);
+
+      if (!(parentIdx in this.nodes)) {
+        // could run into an infinite loop
+        // if the last possible parent has been passed, throw error
+        if (rightChild(lastValidNodeIndex) < nodeIndex) {
+          console.log('error at', nodeIndex, arr[arrIndex]);
+
+          throw new Error(`invalid input: ${arr}`);
+        }
+        ++nodeIndex;
+        continue;
+      }
+
+      if (arr[arrIndex] != null) {
+        lastValidNodeIndex = nodeIndex;
+        const newNode = new Node(arr[arrIndex]);
+        this.nodes[nodeIndex] = newNode;
+
+        // Set it to be the (correct) child of its parent
+        if (leftChild(parentIdx) == nodeIndex) {
+          // If left child
+          this.nodes[parentIdx].left = newNode;
+        } else {
+          // If right child
+          this.nodes[parentIdx].right = newNode;
+        }
+      }
+      ++arrIndex;
+      ++nodeIndex;
+    }
+
+    console.log(this.nodes);
 
     this.calculateHeight();
 
@@ -150,7 +204,7 @@ export default class BinaryTree extends DataStructure {
       .fill(0)
       .map((_, i) => (Math.random() > 0.8 ? null : i));
     arr.unshift(1);
-    this.buildFromArray(arr);
+    this.buildFromSerialArray(arr);
   }
 
   exportCode(exportOptions?: ExportOptionsType): string {

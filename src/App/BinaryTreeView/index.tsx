@@ -32,11 +32,27 @@ export default class BinaryTreeView extends Component<Props, State> {
 
       let arr = JSON.parse(`[${inputText}]`);
       if (Array.isArray(arr)) {
-        console.log('Building from', arr);
-        this.BT.buildFromArray(arr);
+        this.BT.buildFromSerialArray(arr);
       }
     } catch (e: any) {
-      return;
+      // TODO: Return an error into the UI so the user knows
+    }
+  };
+
+  private importFromLeetCodeArray = (inputText: string) => {
+    try {
+      // Replace commas with spaces, then replace all multiple spaces with a single comma
+      inputText = inputText.trim().replace(/,/g, ' ').replace(/\s+/g, ',');
+      // Remove brackets
+      inputText = inputText.replace(/[\[\]\{\}]/g, '');
+
+      let arr = JSON.parse(`[${inputText}]`);
+      if (Array.isArray(arr)) {
+        console.log('Building from', arr);
+        this.BT.buildFromLeetCodeArray(arr);
+      }
+    } catch (e: any) {
+      // TODO: Return an error into the UI so the user knows
     }
   };
 
@@ -62,6 +78,27 @@ export default class BinaryTreeView extends Component<Props, State> {
               id="code-input"
               onChange={(event) => {
                 this.importFromArray((event.target as HTMLInputElement).value);
+              }}
+            />
+            {this.props.children}
+          </section>
+
+          {/* Import from array, LeetCode style */}
+          <section>
+            <header>
+              <strong>Import From Array (LeetCode)</strong>
+              Use <b>null</b> for blank nodes. Children of blank nodes are
+              omitted, which makes the array smaller.{' '}
+              <a href="https://support.leetcode.com/hc/en-us/articles/360011883654-What-does-1-null-2-3-mean-in-binary-tree-representation-">
+                LeetCode reference for Binary Tree representation
+              </a>
+              .
+            </header>
+            <input
+              onChange={(event) => {
+                this.importFromLeetCodeArray(
+                  (event.target as HTMLInputElement).value,
+                );
               }}
             />
             {this.props.children}
