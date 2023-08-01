@@ -31,7 +31,7 @@ export function rightChild(index: number) {
 
 export interface ExportOptionsType {
   language: 'python' | 'java' | 'c++' | 'javascript';
-  asArray: 'array-of-values' | 'nodes';
+  exportType: 'leetcode' | 'serial' | 'nodes';
 }
 
 export default class BinaryTree extends DataStructure {
@@ -57,8 +57,6 @@ export default class BinaryTree extends DataStructure {
   }
 
   buildFromSerialArray(arr: Array<string | number | null>) {
-    console.log('Building from array');
-
     // Set all nodes to null
     this.nodes = {};
 
@@ -88,8 +86,6 @@ export default class BinaryTree extends DataStructure {
    * @example [1,null,2,null,3] creates a right-aligned tree 1 > 2 > 3
    */
   buildFromLeetCodeArray(arr: Array<string | number | null>) {
-    console.log('Building from LeetCode array');
-
     // Reset nodes + base case
     this.nodes = { 0: new Node(arr[0]) };
 
@@ -104,8 +100,6 @@ export default class BinaryTree extends DataStructure {
         // could run into an infinite loop
         // if the last possible parent has been passed, throw error
         if (rightChild(lastValidNodeIndex) < nodeIndex) {
-          console.log('error at', nodeIndex, arr[arrIndex]);
-
           throw new Error(`invalid input: ${arr}`);
         }
         ++nodeIndex;
@@ -129,8 +123,6 @@ export default class BinaryTree extends DataStructure {
       ++arrIndex;
       ++nodeIndex;
     }
-
-    console.log(this.nodes);
 
     this.calculateHeight();
 
@@ -211,16 +203,46 @@ export default class BinaryTree extends DataStructure {
     if (!exportOptions)
       return this.exportCode({
         language: 'python',
-        asArray: 'array-of-values',
+        exportType: 'serial',
       });
 
-    const { language, asArray } = exportOptions;
+    const { language, exportType } = exportOptions;
 
-    if (asArray == 'array-of-values') {
-      // Return as an array
-      return this.exportAsArray(language);
+    switch (exportType) {
+      case 'leetcode':
+        return this.exportAsLeetCodeArray(language);
+      case 'serial':
+        return this.exportAsArray(language);
+      case 'nodes':
+        return this.exportAsNodes(language);
     }
-    return this.exportAsNodes(language);
+
+    return 'DEFAULT';
+  }
+
+  private exportAsLeetCodeArray(lang: ExportOptionsType['language']) {
+    const queue = [];
+    const result = [];
+
+    queue.push(0);
+    while (queue.length != 0) {
+      const curr = queue.shift();
+
+      if (!(curr in this.nodes)) {
+        result.push(null);
+        continue;
+      }
+
+      result.push(this.nodes[curr].val);
+
+      // Add children
+      queue.push(leftChild(curr), rightChild(curr));
+    }
+    while (result[result.length - 1] == null) {
+      result.pop();
+    }
+
+    return JSON.stringify(result);
   }
 
   private exportAsArray(lang: ExportOptionsType['language']) {
@@ -228,7 +250,7 @@ export default class BinaryTree extends DataStructure {
     for (const [key, node] of Object.entries(this.nodes)) {
       arr[key] = node.val;
     }
-    let str = arr.map((val) => (val == null ? 'null' : val)).join(', ');
+    let str = arr.map((val) => (val == null ? 'null' : val)).join(',');
 
     const BRACKET: [string, string] =
       lang == 'python' ? ['[', ']'] : ['{', '}'];

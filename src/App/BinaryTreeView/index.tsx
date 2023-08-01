@@ -57,8 +57,6 @@ export default class BinaryTreeView extends Component<Props, State> {
   };
 
   render() {
-    console.log('bruh');
-
     return (
       <Fragment>
         <main>
@@ -118,12 +116,13 @@ export default class BinaryTreeView extends Component<Props, State> {
               }
             ></Select>
             <Select
-              name="asArray"
+              name="exportType"
               options={
                 {
-                  'array-of-values': 'Array of values',
+                  leetcode: 'LeetCode Testcases',
+                  serial: 'Serial Array',
                   nodes: 'Nodes',
-                } as Record<ExportOptionsType['asArray'], any>
+                } as Record<ExportOptionsType['exportType'], any>
               }
             ></Select>
           </ExportCode>
